@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Maldives Shop Manager"
+description = "A simple shop-management app for Maldivian retailers, beginning with Owner and Cashier access, database foundations, and demo data."
+version = "1.0.0"
+id = "artifacts/maldives-shop-manager"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25710
+
+[services.development]
+run = "pnpm --filter @workspace/maldives-shop-manager run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/maldives-shop-manager", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/maldives-shop-manager/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25710"
+BASE_PATH = "/"

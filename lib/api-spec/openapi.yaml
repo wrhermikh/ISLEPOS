@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Signed-in user profile and role
+  - name: staff
+    description: Owner-managed shop access
 paths:
   /healthz:
     get:
@@ -24,6 +28,98 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get the signed-in shop user
+      responses:
+        "200":
+          description: Current user and assigned shop role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentUser"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: User has not been granted shop access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /staff:
+    get:
+      operationId: listStaff
+      tags: [staff]
+      summary: List shop users and pending cashier access
+      responses:
+        "200":
+          description: Shop staff
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StaffMember"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Owner role required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /staff/invitations:
+    post:
+      operationId: inviteCashier
+      tags: [staff]
+      summary: Grant cashier access to a verified email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaffInvitationInput"
+      responses:
+        "201":
+          description: Cashier access is ready for that email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffMember"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Owner role required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Email already has shop access
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +129,51 @@ components:
           type: string
       required:
         - status
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    CurrentUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [owner, cashier]
+        status:
+          type: string
+          enum: [active, pending]
+      required: [id, email, fullName, role, status]
+    StaffMember:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [owner, cashier]
+        status:
+          type: string
+          enum: [active, pending]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, email, role, status, createdAt]
+    StaffInvitationInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required: [email]
 

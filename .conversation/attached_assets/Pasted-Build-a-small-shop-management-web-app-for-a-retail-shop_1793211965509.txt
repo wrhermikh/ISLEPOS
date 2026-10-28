@@ -1,0 +1,31 @@
+Build a small-shop management web app for a retail shop in the Maldives. Currency is MVR, time zone is Maldives (UTC+5). Prioritise accuracy, fast data entry and simplicity.
+
+STACK: React + TypeScript + Tailwind frontend, Node/Express backend, PostgreSQL with migrations. Use Replit's built-in Postgres. Keep the schema plain SQL-compatible so it can move to Supabase later. Responsive layout (phone, tablet, desktop). No secrets in frontend code.
+
+BUILD IN STAGES. Finish and test each stage, then stop and summarise before the next.
+Stage 1: Database schema, migrations, login with two roles (Owner, Cashier), seed demo data.
+Stage 2: Products and stock, POS, invoices and payments.
+Stage 3: Cashbook, cash and bank accounts, transfers, daily cash closing.
+Stage 4: Dashboard and reports with CSV export.
+Stage 5: Quotations, suppliers and purchases, customers and statements, audit log, settings.
+
+MONEY RULES (mandatory):
+- Store all money as integer laari (1/100 MVR). Never use floats.
+- Sales, payments, refunds and stock changes run inside database transactions.
+- Duplicate-submission protection on payments and sales (idempotency key).
+- The ledger is append-only. Never delete or edit financial records; use reversals or correction entries with a reason. Log every edit, discount, refund, reversal and cash adjustment in an audit table with user and time.
+- A quotation is not a sale. An invoice is not cash received. A credit sale increases receivables; a payment reduces receivables and increases cash or bank.
+- Loans, owner capital and owner withdrawals are never sales or expenses. Transfers between cash and bank are never income or expense.
+- Stock purchases are inventory, not expenses. Cost of goods sold is recorded at sale time (document the costing method; use weighted average cost).
+- Stock changes only through a recorded movement with a reason and a source transaction.
+- Refunds reverse the sale, payment and stock effects.
+- Expected closing cash = opening cash + cash received − cash paid out. Closing shows the counted amount and any surplus or shortage.
+- Enforce permissions on the server. Cashiers can sell, take payments and make quotations; only the Owner approves refunds, discounts, stock adjustments and sees full financial reports.
+
+SCREENS: Dashboard (today's sales vs cash actually received, bank received, money out, receivables, cash drawer and bank balances, gross and estimated profit, low stock, overdue invoices), POS (search by name, SKU or barcode, cart, discounts, cash, transfer, card, split, partial and credit payments, printable receipts), Products and stock, Invoices and payments, Quotations (convert to invoice), Cashbook, Daily cash closing, Suppliers and purchases, Customers and statements, Reports, Settings, Audit log.
+
+REPORTS: daily cashbook, cash in and out, expenses by category, profit and loss, gross profit by product, top sellers, receivables, payables, stock value, cash reconciliation. All with date filters and CSV export.
+
+DELIVER: working app, migrations, demo data, .env.example, automated tests for the financial calculations (sale, credit sale, partial payment, refund, transfer, cash closing with shortage, void), README with setup and backup steps. Do not mark a feature done unless you tested it. Do not leave non-working placeholders; build a simple, working version instead.
+
+Start with Stage 1 only.

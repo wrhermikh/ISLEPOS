@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 36" fill="none">
+  <rect width="34" height="34" x="1" y="1" rx="11" fill="#28665F"/>
+  <path d="M8 18c4.1-4.3 8.3-4.3 12.4 0s8.3 4.3 12.4 0M8 23c4.1-4.3 8.3-4.3 12.4 0s8.3 4.3 12.4 0" stroke="#F6F2E3" stroke-linecap="round" stroke-width="2"/>
+  <text x="44" y="25" fill="#24413D" font-family="Manrope, sans-serif" font-size="22" font-weight="800" letter-spacing="-1.4">isle</text>
+  <text x="79" y="25" fill="#6F8B82" font-family="Manrope, sans-serif" font-size="22" font-weight="500" letter-spacing="-1.4">desk</text>
+</svg>
