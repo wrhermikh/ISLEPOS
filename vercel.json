@@ -9,10 +9,6 @@
     "maldives-shop-manager": {
       "root": "artifacts/maldives-shop-manager",
       "framework": "vite"
-    },
-    "mockup-sandbox": {
-      "root": "artifacts/mockup-sandbox",
-      "framework": "vite"
     }
   },
   "rewrites": [
@@ -30,4 +26,3 @@
     }
   ]
 }
-
