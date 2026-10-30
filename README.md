@@ -1,28 +1,39 @@
 # Maldives Shop Manager
 
-Stage 1 of a small-shop management app for retailers in the Maldives. It establishes the PostgreSQL schema, MVR/laari conventions, demo records, Clerk sign-in, and Owner/Cashier access. Sales, inventory workflows, cashbook, reports, and the later modules are intentionally not part of this stage.
+Core shop operations for retailers in the Maldives: product catalog and opening stock, MVR point-of-sale checkout, split or partial payments, customer credit, invoices, stock movement, and owner/cashier access. Money is stored as integer laari and checkout records are committed atomically.
 
 ## Stack
 
 - React, TypeScript, Tailwind CSS, and Vite
 - Express API server
-- Replit-managed Clerk authentication
-- Replit PostgreSQL
+- Supabase Auth
+- Supabase PostgreSQL
+- Vercel for the frontend and Express API
 - Plain PostgreSQL SQL migrations, with Drizzle for typed application queries
 
 ## Setup
 
 1. Install workspace packages with `pnpm install`.
-2. Provision Clerk through the Replit Auth setup. Do not put Clerk keys in frontend source or commit them.
-3. Set `SHOP_OWNER_EMAIL` to the verified email that should receive the first Owner role.
-4. Apply the development database migrations:
+2. Create a Supabase project and configure the values in `.env.example`.
+3. Set `SHOP_OWNER_EMAIL` to the email that should receive the first Owner role. Keep Supabase email verification enabled so the owner email is proven before the role is granted.
+4. Apply the database migrations:
 
    ```sh
    pnpm --filter @workspace/db run migrate
    ```
 
-5. Start the `artifacts/api-server: API Server` and `artifacts/maldives-shop-manager: web` workflows.
-6. Create an account using the configured Owner email. The server verifies the Clerk account and grants the Owner role. Owners can add a cashier email; the cashier must then sign up or sign in with that verified email. Adding access does not send an email.
+5. Start the API server and web app workflows.
+6. Create an account using the configured Owner email, confirm it through Supabase Auth, and sign in. Owners can grant cashier access to an email; that user signs in with the same verified address.
+
+## Vercel and Supabase
+
+- Set `DATABASE_URL`, `PG_POOL_MAX=2`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SHOP_OWNER_EMAIL` as server-side Vercel environment variables.
+- Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as Vercel build variables. The anon key is public; never place a service-role key or database URL in a `VITE_` variable.
+- For Vercel's serverless API, use the Supabase transaction-pooler connection string with SSL enabled. Keep the pool small; `PG_POOL_MAX` defaults to 2.
+- Add the deployed Vercel domain and local development URL to Supabase Auth's allowed redirect URLs, including the `/home` callback.
+- Supabase email confirmation is handled by Supabase Auth. The app does not send sales receipts or other custom email.
+- Migration `0007_private_api_only.sql` enables RLS without public policies; shop data is read and written through the authenticated Express API.
+- `vercel.json` contains the app/API service rewrites. Set the variables for both Preview and Production before testing each environment.
 
 ## Database migrations
 
@@ -34,7 +45,7 @@ The initial migration seeds a demo shop, MVR cash and bank accounts, sample prod
 
 ## Backup and restore
 
-Use the Replit database's development or production connection string for the intended environment. Keep backups in a secure location outside the repository:
+Use a Supabase database connection string for the intended environment. Keep backups in a secure location outside the repository:
 
 ```sh
 mkdir -p "$HOME/shop-backups"
@@ -53,5 +64,11 @@ Never commit database dumps; they may contain personal or financial data.
 
 ```sh
 pnpm run typecheck
+pnpm --filter @workspace/api-server run test
+pnpm run build
 pnpm --filter @workspace/db run migrate
 ```
+
+## Not implemented yet
+
+Refund workflows, supplier purchasing, cash closing, and reports are not part of the current usable POS slice.

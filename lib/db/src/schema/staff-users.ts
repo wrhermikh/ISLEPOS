@@ -11,6 +11,8 @@ export const staffUsersTable = pgTable(
     shopId: uuid("shop_id")
       .notNull()
       .references(() => shopsTable.id, { onDelete: "restrict" }),
+    supabaseUserId: text("supabase_user_id").unique(),
+    // Retained for legacy rows while this shop transitions from Replit Clerk.
     clerkUserId: text("clerk_user_id").unique(),
     email: text("email").notNull(),
     fullName: text("full_name"),
