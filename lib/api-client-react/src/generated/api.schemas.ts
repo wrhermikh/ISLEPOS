@@ -66,3 +66,167 @@ export interface StaffInvitationInput {
   email: string;
 }
 
+export interface Product {
+  id: string;
+  sku: string;
+  /** @nullable */
+  barcode: string | null;
+  name: string;
+  /** @nullable */
+  categoryName: string | null;
+  unit: string;
+  /** @pattern ^[0-9]+$ */
+  sellingPriceLaari: string;
+  /** @pattern ^[0-9]+$ */
+  costPriceLaari: string;
+  /** @pattern ^-?[0-9]+(\.[0-9]{1,3})?$ */
+  stockOnHand: string;
+  /** @pattern ^[0-9]+(\.[0-9]{1,3})?$ */
+  lowStockThreshold: string;
+  isActive: boolean;
+}
+
+export interface ProductCreateInput {
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  sku: string;
+  /** @maxLength 120 */
+  barcode?: string;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  name: string;
+  /** @maxLength 80 */
+  categoryName?: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  unit?: string;
+  /** @pattern ^[0-9]+$ */
+  sellingPriceLaari: string;
+  /** @pattern ^[0-9]+$ */
+  costPriceLaari: string;
+  /** @pattern ^[0-9]+(\.[0-9]{1,3})?$ */
+  lowStockThreshold: string;
+  /** @pattern ^[0-9]+(\.[0-9]{1,3})?$ */
+  openingQuantity: string;
+  /**
+     * @minLength 1
+     * @maxLength 240
+     */
+  openingReason: string;
+}
+
+export type FinancialAccountAccountType = typeof FinancialAccountAccountType[keyof typeof FinancialAccountAccountType];
+
+
+export const FinancialAccountAccountType = {
+  cash: 'cash',
+  bank: 'bank',
+} as const;
+
+export interface FinancialAccount {
+  id: string;
+  name: string;
+  accountType: FinancialAccountAccountType;
+}
+
+export interface Customer {
+  id: string;
+  fullName: string;
+  /** @nullable */
+  phone: string | null;
+  /** @nullable */
+  email: string | null;
+}
+
+export interface CustomerCreateInput {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  fullName: string;
+  /** @maxLength 40 */
+  phone?: string;
+  /** @maxLength 254 */
+  email?: string;
+}
+
+export interface SaleItemInput {
+  productId: string;
+  /** @pattern ^(?:0|[1-9][0-9]*)(?:\.[0-9]{1,3})?$ */
+  quantity: string;
+}
+
+export type SalePaymentInputMethod = typeof SalePaymentInputMethod[keyof typeof SalePaymentInputMethod];
+
+
+export const SalePaymentInputMethod = {
+  cash: 'cash',
+  bank_transfer: 'bank_transfer',
+  card: 'card',
+  other: 'other',
+} as const;
+
+export interface SalePaymentInput {
+  /** @pattern ^[0-9]+$ */
+  amountLaari: string;
+  accountId: string;
+  method: SalePaymentInputMethod;
+  /** @maxLength 120 */
+  reference?: string;
+}
+
+export interface SaleCreateInput {
+  /**
+     * @minLength 8
+     * @maxLength 128
+     */
+  idempotencyKey: string;
+  /**
+     * @minItems 1
+     * @maxItems 100
+     */
+  items: SaleItemInput[];
+  customerId?: string;
+  /** @pattern ^[0-9]+$ */
+  discountLaari?: string;
+  /** @maxLength 240 */
+  discountReason?: string;
+  /** @maxItems 8 */
+  payments?: SalePaymentInput[];
+}
+
+export type SaleReceiptStatus = typeof SaleReceiptStatus[keyof typeof SaleReceiptStatus];
+
+
+export const SaleReceiptStatus = {
+  issued: 'issued',
+  partially_paid: 'partially_paid',
+  paid: 'paid',
+} as const;
+
+export interface SaleReceipt {
+  id: string;
+  invoiceNumber: string;
+  status: SaleReceiptStatus;
+  subtotalLaari: string;
+  discountLaari: string;
+  totalLaari: string;
+  paidLaari: string;
+  balanceDueLaari: string;
+  createdAt: string;
+}
+
+export type ListProductsParams = {
+search?: string;
+};
+
+export type ListCustomersParams = {
+search?: string;
+};
+

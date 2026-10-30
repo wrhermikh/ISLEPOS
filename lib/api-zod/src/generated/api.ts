@@ -58,3 +58,188 @@ export const InviteCashierResponse = zod.object({
 })
 
 
+/**
+ * @summary List active shop products with current stock
+ */
+export const ListProductsQueryParams = zod.object({
+  "search": zod.coerce.string().optional()
+})
+
+export const listProductsResponseSellingPriceLaariRegExp = new RegExp('^[0-9]+$');
+export const listProductsResponseCostPriceLaariRegExp = new RegExp('^[0-9]+$');
+export const listProductsResponseStockOnHandRegExp = new RegExp('^-?[0-9]+(\\.[0-9]{1,3})?$');
+export const listProductsResponseLowStockThresholdRegExp = new RegExp('^[0-9]+(\\.[0-9]{1,3})?$');
+
+
+export const ListProductsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "sku": zod.string(),
+  "barcode": zod.string().nullable(),
+  "name": zod.string(),
+  "categoryName": zod.string().nullable(),
+  "unit": zod.string(),
+  "sellingPriceLaari": zod.string().regex(listProductsResponseSellingPriceLaariRegExp),
+  "costPriceLaari": zod.string().regex(listProductsResponseCostPriceLaariRegExp),
+  "stockOnHand": zod.string().regex(listProductsResponseStockOnHandRegExp),
+  "lowStockThreshold": zod.string().regex(listProductsResponseLowStockThresholdRegExp),
+  "isActive": zod.boolean()
+})
+export const ListProductsResponse = zod.array(ListProductsResponseItem)
+
+
+/**
+ * @summary Create a product and optional opening stock
+ */
+export const createProductBodySkuMax = 80;
+
+export const createProductBodyBarcodeMax = 120;
+
+export const createProductBodyNameMax = 160;
+
+export const createProductBodyCategoryNameMax = 80;
+
+export const createProductBodyUnitMax = 40;
+
+export const createProductBodySellingPriceLaariRegExp = new RegExp('^[0-9]+$');
+export const createProductBodyCostPriceLaariRegExp = new RegExp('^[0-9]+$');
+export const createProductBodyLowStockThresholdRegExp = new RegExp('^[0-9]+(\\.[0-9]{1,3})?$');
+export const createProductBodyOpeningQuantityRegExp = new RegExp('^[0-9]+(\\.[0-9]{1,3})?$');
+export const createProductBodyOpeningReasonMax = 240;
+
+
+
+export const CreateProductBody = zod.object({
+  "sku": zod.string().min(1).max(createProductBodySkuMax),
+  "barcode": zod.string().max(createProductBodyBarcodeMax).optional(),
+  "name": zod.string().min(1).max(createProductBodyNameMax),
+  "categoryName": zod.string().max(createProductBodyCategoryNameMax).optional(),
+  "unit": zod.string().min(1).max(createProductBodyUnitMax).optional(),
+  "sellingPriceLaari": zod.string().regex(createProductBodySellingPriceLaariRegExp),
+  "costPriceLaari": zod.string().regex(createProductBodyCostPriceLaariRegExp),
+  "lowStockThreshold": zod.string().regex(createProductBodyLowStockThresholdRegExp),
+  "openingQuantity": zod.string().regex(createProductBodyOpeningQuantityRegExp),
+  "openingReason": zod.string().min(1).max(createProductBodyOpeningReasonMax)
+})
+
+export const createProductResponseSellingPriceLaariRegExp = new RegExp('^[0-9]+$');
+export const createProductResponseCostPriceLaariRegExp = new RegExp('^[0-9]+$');
+export const createProductResponseStockOnHandRegExp = new RegExp('^-?[0-9]+(\\.[0-9]{1,3})?$');
+export const createProductResponseLowStockThresholdRegExp = new RegExp('^[0-9]+(\\.[0-9]{1,3})?$');
+
+
+export const CreateProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "sku": zod.string(),
+  "barcode": zod.string().nullable(),
+  "name": zod.string(),
+  "categoryName": zod.string().nullable(),
+  "unit": zod.string(),
+  "sellingPriceLaari": zod.string().regex(createProductResponseSellingPriceLaariRegExp),
+  "costPriceLaari": zod.string().regex(createProductResponseCostPriceLaariRegExp),
+  "stockOnHand": zod.string().regex(createProductResponseStockOnHandRegExp),
+  "lowStockThreshold": zod.string().regex(createProductResponseLowStockThresholdRegExp),
+  "isActive": zod.boolean()
+})
+
+
+/**
+ * @summary List active cash and bank accounts for checkout
+ */
+export const ListFinancialAccountsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "accountType": zod.enum(['cash', 'bank'])
+})
+export const ListFinancialAccountsResponse = zod.array(ListFinancialAccountsResponseItem)
+
+
+/**
+ * @summary Search shop customers for credit sales and receipts
+ */
+export const ListCustomersQueryParams = zod.object({
+  "search": zod.coerce.string().optional()
+})
+
+export const ListCustomersResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "fullName": zod.string(),
+  "phone": zod.string().nullable(),
+  "email": zod.string().nullable()
+})
+export const ListCustomersResponse = zod.array(ListCustomersResponseItem)
+
+
+/**
+ * @summary Add a customer for credit sales and emailed receipts
+ */
+export const createCustomerBodyFullNameMax = 160;
+
+export const createCustomerBodyPhoneMax = 40;
+
+export const createCustomerBodyEmailMax = 254;
+
+
+
+export const CreateCustomerBody = zod.object({
+  "fullName": zod.string().min(1).max(createCustomerBodyFullNameMax),
+  "phone": zod.string().max(createCustomerBodyPhoneMax).optional(),
+  "email": zod.string().email().max(createCustomerBodyEmailMax).optional()
+})
+
+export const CreateCustomerResponse = zod.object({
+  "id": zod.string().uuid(),
+  "fullName": zod.string(),
+  "phone": zod.string().nullable(),
+  "email": zod.string().nullable()
+})
+
+
+/**
+ * @summary Create an invoice, record payments, and decrement stock
+ */
+export const createSaleBodyIdempotencyKeyMin = 8;
+export const createSaleBodyIdempotencyKeyMax = 128;
+
+export const createSaleBodyItemsItemQuantityRegExp = new RegExp('^(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,3})?$');
+export const createSaleBodyItemsMax = 100;
+
+export const createSaleBodyDiscountLaariRegExp = new RegExp('^[0-9]+$');
+export const createSaleBodyDiscountReasonMax = 240;
+
+export const createSaleBodyPaymentsItemAmountLaariRegExp = new RegExp('^[0-9]+$');
+export const createSaleBodyPaymentsItemReferenceMax = 120;
+
+export const createSaleBodyPaymentsMax = 8;
+
+
+
+export const CreateSaleBody = zod.object({
+  "idempotencyKey": zod.string().min(createSaleBodyIdempotencyKeyMin).max(createSaleBodyIdempotencyKeyMax),
+  "items": zod.array(zod.object({
+  "productId": zod.string().uuid(),
+  "quantity": zod.string().regex(createSaleBodyItemsItemQuantityRegExp)
+})).min(1).max(createSaleBodyItemsMax),
+  "customerId": zod.string().uuid().optional(),
+  "discountLaari": zod.string().regex(createSaleBodyDiscountLaariRegExp).optional(),
+  "discountReason": zod.string().max(createSaleBodyDiscountReasonMax).optional(),
+  "payments": zod.array(zod.object({
+  "amountLaari": zod.string().regex(createSaleBodyPaymentsItemAmountLaariRegExp),
+  "accountId": zod.string().uuid(),
+  "method": zod.enum(['cash', 'bank_transfer', 'card', 'other']),
+  "reference": zod.string().max(createSaleBodyPaymentsItemReferenceMax).optional()
+})).max(createSaleBodyPaymentsMax).optional()
+})
+
+export const CreateSaleResponse = zod.object({
+  "id": zod.string().uuid(),
+  "invoiceNumber": zod.string(),
+  "status": zod.enum(['issued', 'partially_paid', 'paid']),
+  "subtotalLaari": zod.string(),
+  "discountLaari": zod.string(),
+  "totalLaari": zod.string(),
+  "paidLaari": zod.string(),
+  "balanceDueLaari": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
